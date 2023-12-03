@@ -1,19 +1,27 @@
-namespace Aoc;
+﻿namespace Aoc;
+  using System.Linq;
 [TestClass]
-public class Day1Puz1:Test
+public class Day1Puz2 : Test
 {
   [TestMethod]
   public void Tst() {
     int ans = total(tstDoc);
     log($"sum:{ans}");
-    chk(ans == 142);
+    chk(ans == 281);
+  }
+
+  [TestMethod]
+  public void TstOverlappingNumStr() { // twone
+    str doc = "fivezg8jmf6hrxnhgxxttwoneg";
+    int ans = total(doc);
+    chk(ans == 51);
   }
 
   [TestMethod]
   public void Ans() {
     int ans = total(doc);
     log($"sum:{ans}");
-    chk(ans==55172);
+    chk(ans == 54925);
   }
 
   int total(str doc) {
@@ -22,25 +30,56 @@ public class Day1Puz1:Test
     str[] txts = doc.Split("\r\n");
     foreach (str txt in txts) {
       var nums = new List<int>();
-      foreach (char ch in txt) {
+      for (int i=0; i<txt.Length; i++) {
+        char ch = txt[i];
         if (int.TryParse(ch.ToString(), out int num)) {
           nums.Add(num);
+        } else {
+          str sb = txt.Substring(i);
+          foreach (var numStr in numStrs) {
+            if (sb.StartsWith(numStr.Key)) {
+              nums.Add(numStr.Value);
+              //i += numStr.Key.Length - 1;
+              break;
+            }
+          }
         }
       }
       int _1 = nums.First();
       int _2 = nums.Last();
       int val = int.Parse($"{_1}{_2}");
+      log($"val:{val}: {str.Join(",", nums)}");
       vals.Add(val);
     }
     int ans = vals.Sum();
     return ans;
   }
 
+  Dictionary<str,int> numStrs = new() {
+    // did not mention "zero"
+    { "one", 1 },
+    { "two", 2 },
+    { "three", 3 },
+    { "four", 4 },
+    { "five", 5 },
+    { "six", 6 },
+    { "seven", 7 },
+    { "eight", 8 },
+    { "nine", 9 }
+  };
+
+  str bugDoc = """
+  fivezg8jmf6hrxnhgxxttwoneg
+  """;
+
   str tstDoc = """
-    1abc2
-    pqr3stu8vwx
-    a1b2c3d4e5f
-    treb7uchet
+    two1nine
+    eightwothree
+    abcone2threexyz
+    xtwone3four
+    4nineeightseven2
+    zoneight234
+    7pqrstsixteen
     """;
 
   str doc = """
